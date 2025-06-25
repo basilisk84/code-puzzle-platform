@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getPuzzles, createPuzzle } from '../services/dbService';
+import { getPuzzles, createPuzzle, addPoints } from '../services/dbService';
 
 interface Puzzle {
   _id: string;
@@ -11,11 +11,15 @@ interface Puzzle {
 const PuzzleList: React.FC = () => {
   const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
   const [newPuzzleTitle, setNewPuzzleTitle] = useState('');
+  const [points, setPoints] = useState(0);
 
   useEffect(() => {
     const fetchPuzzles = async () => {
       const puzzleList = await getPuzzles();
       setPuzzles(puzzleList);
+      // Simuliere Punkte für den Benutzer
+      const userPoints = await addPoints('user1', 0); // Initialer Abruf
+      setPoints(userPoints);
     };
     fetchPuzzles();
   }, []);
@@ -25,12 +29,16 @@ const PuzzleList: React.FC = () => {
       const newPuzzle = await createPuzzle(newPuzzleTitle);
       setPuzzles([...puzzles, newPuzzle]);
       setNewPuzzleTitle('');
+      // Vergib Punkte für das Erstellen eines Puzzles
+      const newPoints = await addPoints('user1', 10);
+      setPoints(newPoints);
     }
   };
 
   return (
     <div>
       <div className="mb-4">
+        <h2>Punkte: {points}</h2>
         <input
           type="text"
           value={newPuzzleTitle}
@@ -42,7 +50,7 @@ const PuzzleList: React.FC = () => {
           onClick={handleCreatePuzzle}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
-          Puzzle erstellen
+          Puzzle erstellen (+10 Punkte)
         </button>
       </div>
       <ul className="space-y-2">
