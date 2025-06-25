@@ -2,13 +2,13 @@ import PouchDB from 'pouchdb';
 
 // Definiere die benutzerdefinierten Typen mit _id als Pflichtfeld
 interface Puzzle {
-  _id: string; // PouchDB erfordert _id
+  _id: string;
   title: string;
   createdAt: Date;
 }
 
 interface UserDoc {
-  _id: string; // PouchDB erfordert _id
+  _id: string;
   points?: number;
 }
 
