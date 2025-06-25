@@ -2,19 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getPuzzles, createPuzzle } from '../services/dbService';
 
+interface Puzzle {
+  _id: string;
+  title: string;
+  createdAt: Date;
+}
+
 const PuzzleList: React.FC = () => {
-  const [puzzles, setPuzzles] = useState<{ id: string; title: string }[]>([]);
+  const [puzzles, setPuzzles] = useState<Puzzle[]>([]);
   const [newPuzzleTitle, setNewPuzzleTitle] = useState('');
 
   useEffect(() => {
     const fetchPuzzles = async () => {
       const puzzleList = await getPuzzles();
-      // Konvertiere _id zu id
-      const formattedPuzzles = puzzleList.map((puzzle) => ({
-        id: puzzle._id,
-        title: puzzle.title,
-      }));
-      setPuzzles(formattedPuzzles);
+      setPuzzles(puzzleList);
     };
     fetchPuzzles();
   }, []);
@@ -22,7 +23,7 @@ const PuzzleList: React.FC = () => {
   const handleCreatePuzzle = async () => {
     if (newPuzzleTitle) {
       const newPuzzle = await createPuzzle(newPuzzleTitle);
-      setPuzzles([...puzzles, { id: newPuzzle._id, title: newPuzzle.title }]);
+      setPuzzles([...puzzles, newPuzzle]);
       setNewPuzzleTitle('');
     }
   };
@@ -46,8 +47,8 @@ const PuzzleList: React.FC = () => {
       </div>
       <ul className="space-y-2">
         {puzzles.map((puzzle) => (
-          <li key={puzzle.id}>
-            <Link to={`/puzzle/${puzzle.id}`} className="text-blue-500 hover:underline">
+          <li key={puzzle._id}>
+            <Link to={`/puzzle/${puzzle._id}`} className="text-blue-500 hover:underline">
               {puzzle.title}
             </Link>
           </li>

@@ -1,12 +1,14 @@
-import PouchDB, { Document } from 'pouchdb';
+import PouchDB from 'pouchdb';
 
-// Definiere die benutzerdefinierten Typen
-interface Puzzle extends Document {
+// Definiere die benutzerdefinierten Typen mit _id als Pflichtfeld
+interface Puzzle {
+  _id: string; // PouchDB erfordert _id
   title: string;
   createdAt: Date;
 }
 
-interface UserDoc extends Document {
+interface UserDoc {
+  _id: string; // PouchDB erfordert _id
   points?: number;
 }
 
