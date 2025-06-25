@@ -14,7 +14,7 @@ export const createPuzzle = async (title: string) => {
 
 export const getPuzzles = async () => {
   const result = await db.allDocs({ include_docs: true });
-  return result.rows.map((row) => row.doc);
+  return result.rows.map((row: { doc: { _id: string; title: string; createdAt: Date } }) => row.doc);
 };
 
 export const addPoints = async (userId: string, points: number) => {

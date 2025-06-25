@@ -9,7 +9,12 @@ const PuzzleList: React.FC = () => {
   useEffect(() => {
     const fetchPuzzles = async () => {
       const puzzleList = await getPuzzles();
-      setPuzzles(puzzleList);
+      // Konvertiere _id zu id
+      const formattedPuzzles = puzzleList.map((puzzle) => ({
+        id: puzzle._id,
+        title: puzzle.title,
+      }));
+      setPuzzles(formattedPuzzles);
     };
     fetchPuzzles();
   }, []);
@@ -17,7 +22,7 @@ const PuzzleList: React.FC = () => {
   const handleCreatePuzzle = async () => {
     if (newPuzzleTitle) {
       const newPuzzle = await createPuzzle(newPuzzleTitle);
-      setPuzzles([...puzzles, newPuzzle]);
+      setPuzzles([...puzzles, { id: newPuzzle._id, title: newPuzzle.title }]);
       setNewPuzzleTitle('');
     }
   };
@@ -42,10 +47,7 @@ const PuzzleList: React.FC = () => {
       <ul className="space-y-2">
         {puzzles.map((puzzle) => (
           <li key={puzzle.id}>
-            <Link
-              to={`/puzzle/${puzzle.id}`}
-              className="text-blue-500 hover:underline"
-            >
+            <Link to={`/puzzle/${puzzle.id}`} className="text-blue-500 hover:underline">
               {puzzle.title}
             </Link>
           </li>
