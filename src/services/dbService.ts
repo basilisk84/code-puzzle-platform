@@ -1,9 +1,19 @@
-import PouchDB from 'pouchdb';
+import PouchDB, { Document } from 'pouchdb';
+
+// Definiere die benutzerdefinierten Typen
+interface Puzzle extends Document {
+  title: string;
+  createdAt: Date;
+}
+
+interface UserDoc extends Document {
+  points?: number;
+}
 
 const db = new PouchDB('puzzles');
 
-export const createPuzzle = async (title: string) => {
-  const puzzle = {
+export const createPuzzle = async (title: string): Promise<Puzzle> => {
+  const puzzle: Puzzle = {
     _id: new Date().toISOString(),
     title,
     createdAt: new Date(),
@@ -12,16 +22,19 @@ export const createPuzzle = async (title: string) => {
   return puzzle;
 };
 
-export const getPuzzles = async () => {
-  const result = await db.allDocs({ include_docs: true });
-  return result.rows.map((row: { doc: { _id: string; title: string; createdAt: Date } }) => row.doc);
+export const getPuzzles = async (): Promise<Puzzle[]> => {
+  const result = await db.allDocs<Puzzle>({ include_docs: true });
+  return result.rows
+    .map((row) => row.doc as Puzzle | undefined)
+    .filter((doc): doc is Puzzle => doc !== undefined);
 };
 
-export const addPoints = async (userId: string, points: number) => {
+export const addPoints = async (userId: string, points: number): Promise<number> => {
   const userDocId = `user_${userId}`;
-  let userDoc;
+  let userDoc: UserDoc;
   try {
-    userDoc = await db.get(userDocId);
+    userDoc = await db.get(userDocId) as UserDoc;
+    if (!userDoc.points) userDoc.points = 0; // Initialisiere points, wenn nicht vorhanden
   } catch (error) {
     userDoc = { _id: userDocId, points: 0 };
   }
