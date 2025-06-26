@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PuzzleList from './components/PuzzleList';
+import PuzzleSolver from './components/PuzzleSolver';
 
 const App: React.FC = () => {
   return (
@@ -9,7 +10,7 @@ const App: React.FC = () => {
         <h1>Code-Puzzle-Plattform</h1>
         <Routes>
           <Route path="/" element={<PuzzleList />} />
-          <Route path="/puzzle/:id" element={<div>Puzzle {window.location.pathname}</div>} />
+          <Route path="/puzzle/:id" element={<PuzzleSolver />} />
         </Routes>
       </div>
     </Router>
