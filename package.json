@@ -17,7 +17,7 @@
     "pouchdb": "^9.0.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router-dom": "^7.6.2",
+    "react-router-dom": "^7.7.0",
     "y-webrtc": "^10.3.0",
     "yjs": "^13.6.27"
   },
