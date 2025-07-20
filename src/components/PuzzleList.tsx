@@ -15,33 +15,47 @@ import { useEffect, useState } from 'react';
         const savedPoints = localStorage.getItem('userPoints');
         return savedPoints ? parseInt(savedPoints, 10) : 0;
       });
+      const [error, setError] = useState<string | null>(null);
 
       useEffect(() => {
         const fetchData = async () => {
-          const puzzleList = await getPuzzles() || [];
-          setPuzzles(puzzleList);
-          const userPoints = await addPoints('user1', points) || points;
-          setPoints(userPoints);
-          localStorage.setItem('userPoints', userPoints.toString());
+          try {
+            const puzzleList = await getPuzzles() || [];
+            setPuzzles(puzzleList);
+            const userPoints = await addPoints(points) || points;
+            setPoints(userPoints);
+            localStorage.setItem('userPoints', userPoints.toString());
+            setError(null);
+          } catch (err) {
+            setError('Fehler beim Laden der Daten. Bitte versuche es später nochmal.');
+            console.error('Fetch-Fehler:', err);
+          }
         };
         fetchData();
       }, [points]);
 
       const handleCreatePuzzle = async () => {
         if (newPuzzleTitle.trim()) {
-          const newPuzzle = await createPuzzle(newPuzzleTitle);
-          if (newPuzzle) {
-            setPuzzles([...puzzles, newPuzzle]);
-            setNewPuzzleTitle('');
-            const newPoints = await addPoints('user1', points + 10) || points + 10;
-            setPoints(newPoints);
-            localStorage.setItem('userPoints', newPoints.toString());
+          try {
+            const newPuzzle = await createPuzzle(newPuzzleTitle);
+            if (newPuzzle) {
+              setPuzzles([...puzzles, newPuzzle]);
+              setNewPuzzleTitle('');
+              const newPoints = await addPoints(points + 10) || points + 10;
+              setPoints(newPoints);
+              localStorage.setItem('userPoints', newPoints.toString());
+              setError(null);
+            }
+          } catch (err) {
+            setError('Fehler beim Erstellen des Puzzles.');
+            console.error('Create-Fehler:', err);
           }
         }
       };
 
       return (
         <div>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
           <div>
             <h2>Punkte: {points}</h2>
             <input

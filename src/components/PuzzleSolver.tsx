@@ -10,24 +10,32 @@ import { useState, useEffect } from 'react';
         const savedPoints = localStorage.getItem('userPoints');
         return savedPoints ? parseInt(savedPoints, 10) : 0;
       });
+      const [error, setError] = useState<string | null>(null);
 
       useEffect(() => {
         localStorage.setItem('userPoints', points.toString());
       }, [points]);
 
       const handleSolve = async () => {
-        if (solution.toLowerCase() === 'test') {
-          const newPoints = await addPoints('user1', points + 20) || points + 20;
-          setPoints(newPoints);
-          setResult('Richtig! +20 Punkte');
-          localStorage.setItem('userPoints', newPoints.toString());
-        } else {
-          setResult('Falsch!');
+        try {
+          if (solution.toLowerCase() === 'test') {
+            const newPoints = await addPoints(points + 20) || points + 20;
+            setPoints(newPoints);
+            setResult('Richtig! +20 Punkte');
+            localStorage.setItem('userPoints', newPoints.toString());
+            setError(null);
+          } else {
+            setResult('Falsch!');
+          }
+        } catch (err) {
+          setError('Fehler beim Einreichen der Lösung.');
+          console.error('Solve-Fehler:', err);
         }
       };
 
       return (
         <div>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
           <h2>Puzzle {id} lösen</h2>
           <input
             value={solution}
